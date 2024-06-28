@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import yaml
 import re
-from typing import Optional
+from typing import Optional, List
 
 @dataclass
 class LMCacheEngineMetadata:
@@ -17,14 +17,17 @@ class LMCacheEngineMetadata:
     ''' the format of kv tensors '''
     fmt: str
 
+# TODO(Jiayi): clean this dataclass
 @dataclass
 class LMCacheEngineConfig:
-    chunk_size: int
+    #chunk_size: int
     local_device: str
-    remote_url: str
-    remote_serde: str # Can be "torch" or "cachegen"
+    init_skip_len: int
+    sep_token_ids: List[int]
+    #remote_url: str
+    #remote_serde: str # Can be "torch" or "cachegen"
 
-    pipelined_backend: bool
+    #pipelined_backend: bool
 
     def from_defaults(
             chunk_size: int = 256,

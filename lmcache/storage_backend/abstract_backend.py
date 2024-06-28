@@ -98,6 +98,7 @@ class LMCBackendInterface(metaclass=abc.ABCMeta):
             None if the key is not found
         """
         logger.info("Using default batched implementation of the get() method")
+        
         for key in keys:
             if self.contains(key): # Jiayi: This seems to be redundant?
                 yield self.get(key)

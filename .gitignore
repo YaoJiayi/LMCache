@@ -63,6 +63,7 @@ perf-test.py
 # example
 /examples/example_local.yaml
 /examples/openai_chat_completion_client_local.py
+/examples/cache.pt
 
 # nvtx profile report
 *.nsys-rep

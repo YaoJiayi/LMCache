@@ -2,7 +2,7 @@ from typing import Tuple, Optional, Iterator
 import re
 import io
 import torch
-import redis
+import os
 
 from lmcache.utils import CacheEngineKey, KVCache
 from lmcache.config import LMCacheEngineConfig
@@ -26,10 +26,18 @@ class LMCLocalBackend(LMCBackendInterface):
         """
         super().__init__()
 
-        self.chunk_size = config.chunk_size 
+        #self.chunk_size = config.chunk_size 
         self.config = config
         self.dict = {}
-
+        
+        #TODO: need to pass this from config
+        
+        self.path = "cache.pt"
+        
+        # restore the cache from disk to local pinned cpu mem
+        if os.path.exists(self.path):
+            self.restore()
+        
     def contains(
             self, 
             key: CacheEngineKey,
@@ -48,7 +56,7 @@ class LMCLocalBackend(LMCBackendInterface):
     def put(
             self, 
             key: CacheEngineKey,
-            kv_chunk: KVCache,
+            kv_chunk,
             blocking: bool = True,
         ) -> None:
         """
@@ -67,7 +75,24 @@ class LMCLocalBackend(LMCBackendInterface):
         if not blocking:
             logger.warn("Non-blocking is not implemented for local backend")
         self.dict[key] = kv_chunk
-
+    
+    def dump(
+        self
+    ):
+        for key in self.dict.keys():
+            logger.info(f"saving chunk {key}")
+            logger.info(f"chunk_shape {self.dict[key][0].shape}")
+            logger.info(f"chunk_shape {self.dict[key][1].shape}")
+        torch.save(self.dict, self.path)
+        logger.info(f"saving {len(self.dict.keys())} chunk(s)")
+    
+    def restore(
+        self
+    ):
+        self.dict = torch.load(self.path)
+        for key, val in self.dict.items():
+            self.dict[key] = val.cpu().pin_memory()
+            
 
     @_lmcache_nvtx_annotate
     def get(
