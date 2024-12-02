@@ -69,6 +69,7 @@ perf-test.py
 /examples/offline_inference/offline_inference_outputs.jsonl
 /examples/save_decode_cache/offline_inference_outputs.jsonl
 /examples/offline_inference/buggy_example.py
+/examples/compactor/openai_chat_completion_client_local.py
 /examples/test_example
 
 # disk cache
